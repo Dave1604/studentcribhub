@@ -1,6 +1,7 @@
 import { Scissors, Zap, Hammer, Wrench, ArrowUpRight, type LucideIcon } from "lucide-react";
 import { services } from "@/lib/data";
 import { Reveal } from "@/components/motion/reveal";
+import { Tilt } from "@/components/motion/tilt";
 
 const icons: Record<string, LucideIcon> = {
   scissors: Scissors,
@@ -12,7 +13,7 @@ const icons: Record<string, LucideIcon> = {
 export function CampusServices() {
   return (
     <section id="services" className="scroll-mt-16 border-b border-border bg-background">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28">
+      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28">
         <Reveal className="max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             Campus services
@@ -31,7 +32,11 @@ export function CampusServices() {
             const Icon = icons[s.icon];
             return (
               <Reveal key={s.name} delay={i * 90}>
-                <div className="group h-full rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
+                <Tilt
+                  max={7}
+                  glare={false}
+                  className="group h-full rounded-2xl border border-border bg-card p-6 transition-[border-color,box-shadow] duration-300 hover:border-primary/40 hover:shadow-lg"
+                >
                   <div className="flex items-start justify-between">
                     <span className="grid size-12 place-items-center rounded-xl bg-accent text-primary transition-transform duration-300 group-hover:scale-110">
                       <Icon className="size-5" />
@@ -40,7 +45,7 @@ export function CampusServices() {
                   </div>
                   <h3 className="mt-5 font-display text-lg text-foreground">{s.name}</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{s.blurb}</p>
-                </div>
+                </Tilt>
               </Reveal>
             );
           })}

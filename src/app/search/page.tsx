@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { SlidersHorizontal, SearchX } from "lucide-react";
+import { SlidersHorizontal, SearchX, ShieldCheck } from "lucide-react";
 import { Navbar } from "@/components/site/navbar";
 import { Footer } from "@/components/site/footer";
 import { ListingCard } from "@/components/site/listing-card";
 import { Button } from "@/components/ui/button";
+import { Reveal } from "@/components/motion/reveal";
+import { Tilt } from "@/components/motion/tilt";
 import { listings, roomTypes, campuses } from "@/lib/data";
 
 type SearchParams = {
@@ -35,6 +37,8 @@ export default async function SearchPage({
     return Number(b.verified) - Number(a.verified) || b.rating - a.rating;
   });
 
+  const verifiedCount = results.filter((l) => l.verified).length;
+
   const selectCls =
     "h-10 rounded-lg border border-border bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
@@ -42,11 +46,40 @@ export default async function SearchPage({
     <>
       <Navbar />
       <main className="flex-1 bg-secondary/30">
+        {/* Textured results header */}
+        <div className="grain relative overflow-hidden border-b border-border bg-gradient-to-b from-accent/40 to-secondary/30">
+          <div aria-hidden className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
+            <div className="animate-aurora absolute -right-32 -top-40 size-[32rem] rounded-full bg-primary/15 blur-[100px]" />
+            <div className="animate-aurora-slow absolute -left-24 top-10 size-72 rounded-full bg-brand-amber/15 blur-[90px]" />
+          </div>
+          <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-10 sm:px-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+              Student housing
+            </p>
+            <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
+              <h1 className="font-display text-3xl tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                {campus || "Homes near you"}
+              </h1>
+              <div className="flex items-center gap-4 text-sm">
+                <span className="font-medium text-foreground">
+                  {results.length} {results.length === 1 ? "home" : "homes"}
+                </span>
+                {verifiedCount > 0 && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/70 px-3 py-1 text-muted-foreground backdrop-blur">
+                    <ShieldCheck className="size-3.5 text-primary" />
+                    {verifiedCount} verified
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Filter bar */}
         <div className="sticky top-16 z-40 border-b border-border bg-background/90 backdrop-blur">
           <form
             action="/search"
-            className="mx-auto flex max-w-6xl flex-wrap items-end gap-3 px-4 py-4 sm:px-6"
+            className="mx-auto flex max-w-7xl flex-wrap items-end gap-3 px-4 py-4 sm:px-6"
           >
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-muted-foreground">Campus / area</label>
@@ -100,24 +133,19 @@ export default async function SearchPage({
           </form>
         </div>
 
-        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-          <div className="flex items-center justify-between">
-            <h1 className="font-display text-2xl tracking-tight text-foreground sm:text-3xl">
-              {campus || "All campuses"}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {results.length} {results.length === 1 ? "home" : "homes"} found
-            </p>
-          </div>
-
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
           {results.length > 0 ? (
-            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {results.map((l) => (
-                <ListingCard key={l.id} listing={l} />
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {results.map((l, i) => (
+                <Reveal key={l.id} delay={(i % 3) * 90}>
+                  <Tilt max={6} glare={false} className="h-full">
+                    <ListingCard listing={l} />
+                  </Tilt>
+                </Reveal>
               ))}
             </div>
           ) : (
-            <div className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border bg-background py-16 text-center">
+            <div className="mt-4 flex flex-col items-center rounded-2xl border border-dashed border-border bg-background py-16 text-center">
               <span className="grid size-12 place-items-center rounded-full bg-secondary text-muted-foreground">
                 <SearchX className="size-6" />
               </span>
