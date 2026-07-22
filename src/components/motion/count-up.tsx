@@ -14,32 +14,43 @@ export function CountUp({ value, className }: { value: string; className?: strin
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || !match) return;
+    if (!el) return;
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let raf = 0;
+    let started = false;
+
+    // No number to animate, or the user prefers reduced motion: jump to target.
+    if (!match || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      raf = requestAnimationFrame(() => setN(target));
+      return () => cancelAnimationFrame(raf);
+    }
+
+    const run = () => {
+      if (started) return;
+      started = true;
+      const duration = 1400;
+      const start = performance.now();
+      const tick = (now: number) => {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        setN(Math.round(target * eased));
+        if (t < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    };
 
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) return;
-        io.disconnect();
-        if (reduce) {
-          setN(target);
-          return;
-        }
-        const duration = 1400;
-        const start = performance.now();
-        const tick = (now: number) => {
-          const t = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - t, 3);
-          setN(Math.round(target * eased));
-          if (t < 1) requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
+        if (entry.isIntersecting) run();
       },
       { threshold: 0.4 },
     );
     io.observe(el);
-    return () => io.disconnect();
+
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
   }, [match, target]);
 
   return (
