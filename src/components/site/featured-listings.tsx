@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button";
 import { listings } from "@/lib/data";
 import { ListingCard } from "./listing-card";
 import { Reveal } from "@/components/motion/reveal";
+import { Tilt } from "@/components/motion/tilt";
 
 export function FeaturedListings() {
   const featured = listings.slice(0, 3);
   return (
     <section id="listings" className="scroll-mt-16 border-b border-border bg-secondary/30">
-      <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6 md:py-28">
+      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 md:py-28">
         <Reveal className="flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
@@ -35,7 +36,9 @@ export function FeaturedListings() {
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((l, i) => (
             <Reveal key={l.id} delay={i * 110}>
-              <ListingCard listing={l} />
+              <Tilt max={6} glare={false} className="h-full">
+                <ListingCard listing={l} />
+              </Tilt>
             </Reveal>
           ))}
         </div>

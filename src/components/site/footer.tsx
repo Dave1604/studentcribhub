@@ -18,7 +18,7 @@ const groups = [
 export function Footer() {
   return (
     <footer className="border-t border-border bg-secondary/40">
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <div className="grid gap-10 md:grid-cols-[1.5fr_repeat(3,1fr)]">
           <div>
             <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
